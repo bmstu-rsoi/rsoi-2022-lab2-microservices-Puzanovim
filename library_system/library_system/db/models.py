@@ -1,10 +1,9 @@
-import uuid
 import enum
-
-from sqlalchemy import Column, String, ForeignKey, Integer, Enum
-from sqlalchemy.dialects.postgresql import UUID
+import uuid
 
 from library_system.db.db_config import Base
+from sqlalchemy import Column, Enum, ForeignKey, Integer, String
+from sqlalchemy.dialects.postgresql import UUID
 
 
 class Condition(enum.Enum):
@@ -17,7 +16,7 @@ class Library(Base):
     __tablename__ = 'library'
 
     id = Column(Integer, autoincrement=True, primary_key=True)
-    library_uid = Column(UUID(as_uuid=True), default=uuid.uuid4)
+    library_uid = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     name = Column(String(80), nullable=False)
     city = Column(String(255), nullable=False)
     address = Column(String(255), nullable=False)
@@ -27,7 +26,7 @@ class Book(Base):
     __tablename__ = 'books'
 
     id = Column(Integer, autoincrement=True, primary_key=True)
-    book_uid = Column(UUID(as_uuid=True), nullable=False, default=uuid.uuid4)
+    book_uid = Column(UUID(as_uuid=True), primary_key=True, nullable=False, default=uuid.uuid4)
     name = Column(String(255), nullable=False)
     author = Column(String(255))
     genre = Column(String(255))

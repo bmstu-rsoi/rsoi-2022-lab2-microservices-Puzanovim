@@ -7,8 +7,3 @@ SQLALCHEMY_DATABASE_URL = "postgresql+asyncpg://program:test@postgres:5432/libra
 
 engine = create_async_engine(SQLALCHEMY_DATABASE_URL, echo=True)
 async_session = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
-
-
-async def async_db_session() -> AsyncSession:
-    async with async_session() as db:
-        yield db
