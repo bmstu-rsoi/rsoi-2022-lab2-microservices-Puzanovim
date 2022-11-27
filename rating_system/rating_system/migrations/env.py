@@ -1,10 +1,8 @@
 import asyncio
 from logging.config import fileConfig
 
-from sqlalchemy import engine_from_config
-from sqlalchemy import pool
-
 from alembic import context
+from sqlalchemy import engine_from_config, pool
 from sqlalchemy.ext.asyncio import AsyncEngine
 
 # this is the Alembic Config object, which provides
@@ -20,6 +18,7 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 from rating_system.models import Base
+
 # target_metadata = mymodel.Base.metadata
 target_metadata = Base.metadata
 

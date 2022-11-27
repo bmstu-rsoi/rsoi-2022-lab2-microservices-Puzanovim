@@ -1,15 +1,12 @@
 import logging
-from typing import Dict, Any
+from typing import Any, Dict
 
 import uvicorn
-from fastapi import FastAPI
-
 from alembic import command
 from alembic.config import Config
-
+from fastapi import FastAPI
 from rating_system.config import DB_CONFIG
 from rating_system.db import SQLALCHEMY_DATABASE_URL
-
 
 logger = logging.getLogger(__name__)
 

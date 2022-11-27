@@ -1,6 +1,5 @@
-from sqlalchemy import Column, String, Integer
-
 from rating_system.db import Base
+from sqlalchemy import Column, Integer, String
 
 
 class Rating(Base):
