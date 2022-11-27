@@ -11,23 +11,23 @@ class Condition(Enum):
     BAD = 'BAD'
 
 
-class Library(BaseModel):
-    id: UUID
+class LibraryModel(BaseModel):
+    libraryUid: UUID
     name: str
-    address: str
     city: str
+    address: str
 
 
-class BookInfo(BaseModel):
-    id: UUID
+class BookModel(BaseModel):
+    bookUid: UUID
     name: str
     author: str
     genre: str
 
 
-class Book(BookInfo):
+class BookInfo(BookModel):
     condition: Condition
-    avaiblableCount: int
+    availableCount: int
 
 
 class Pagination(BaseModel):
@@ -37,8 +37,8 @@ class Pagination(BaseModel):
 
 
 class LibrariesPagination(Pagination):
-    items: List[Library]
+    items: List[LibraryModel]
 
 
 class BooksPagination(Pagination):
-    items: List[Book]
+    items: List[BookInfo]

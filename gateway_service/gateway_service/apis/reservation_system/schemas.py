@@ -1,9 +1,8 @@
+from datetime import date
 from enum import Enum
 from uuid import UUID
 
-from gateway_service.apis.library_system_api.schemas import (BookInfo,
-                                                             Condition,
-                                                             Library)
+from gateway_service.apis.library_system_api.schemas import BookModel, Condition, LibraryModel
 from gateway_service.apis.rating_system_api.schemas import UserRating
 from pydantic import BaseModel
 
@@ -15,30 +14,38 @@ class Status(Enum):
 
 
 class Reservation(BaseModel):
-    id: UUID
+    reservationUid: UUID
     status: Status
-    start_date: str  # format: ISO 8601
-    till_date: str  # format: ISO 8601
-    book: BookInfo
-    library: Library
+    startDate: date
+    tillDate: date
+
+
+class ReservationModel(BaseModel):
+    bookUid: UUID
+    libraryUid: UUID
+
+
+class ReservationResponse(BaseModel):
+    book: BookModel
+    library: LibraryModel
 
 
 class ReservationBookInput(BaseModel):
-    book_id: UUID
-    library_id: UUID
-    till_date: str
+    bookUid: UUID
+    libraryUid: UUID
+    tillDate: date
 
 
 class ReturnBookInput(BaseModel):
     condition: Condition
-    date: str
+    date: date
 
 
 class ReservationBook(BaseModel):
-    reservation_id: UUID
+    reservationUid: UUID
     status: Status
-    start_date: str  # format: ISO 8601
-    till_date: str  # format: ISO 8601
-    book: BookInfo
-    library: Library
+    startDate: date
+    tillDate: date
+    book: BookModel
+    library: LibraryModel
     rating: UserRating

@@ -1,6 +1,5 @@
 from gateway_service.apis.library_system_api.api import LibrarySystemAPI
-from gateway_service.apis.rating_system_api.rating_system_api import \
-    RatingSystemAPI
+from gateway_service.apis.rating_system_api.api import RatingSystemAPI
 from gateway_service.apis.reservation_system.api import ReservationSystemAPI
 
 library_system_api: LibrarySystemAPI = LibrarySystemAPI()
