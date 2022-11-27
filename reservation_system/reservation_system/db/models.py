@@ -1,10 +1,9 @@
-import uuid
 import enum
+import uuid
 
-from sqlalchemy import Column, String, Integer, Enum
-from sqlalchemy.dialects.postgresql import UUID, TIMESTAMP
-
-from reservation_system.db import Base
+from reservation_system.db.db_config import Base
+from sqlalchemy import Column, Enum, Integer, String
+from sqlalchemy.dialects.postgresql import TIMESTAMP, UUID
 
 
 class Status(enum.Enum):
@@ -17,7 +16,7 @@ class Reservation(Base):
     __tablename__ = 'reservation'
 
     id = Column(Integer, autoincrement=True, primary_key=True)
-    reservation_uid = Column(UUID(as_uuid=True), default=uuid.uuid4)
+    reservation_uid = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     username = Column(String(80), nullable=False)
     book_uid = Column(UUID(as_uuid=True), nullable=False)
     library_uid = Column(UUID(as_uuid=True), nullable=False)
