@@ -164,11 +164,12 @@ class LibraryRepository:
         return BookModel.from_orm(updated_book)
 
     async def get_library_book(self, library_id: int, book_id: int) -> LibraryBooks:
+        library_book_query = select(LibraryBooks).where(
+            LibraryBooks.library_id == library_id, LibraryBooks.book_id == book_id
+        )
+
         session: AsyncSession = self._session_factory()
         async with session, session.begin():
-            library_book_query = select(LibraryBooks).where(
-                LibraryBooks.library_id == library_id, LibraryBooks.book_uid == book_id
-            )
             result = await session.execute(library_book_query)
 
             try:
@@ -177,6 +178,30 @@ class LibraryRepository:
                 raise NoFoundLibraryBook
 
         return LibraryBooks.from_orm(library_book)
+
+    async def update_library_book(self, library_id: int, book_id: int, change_count: int) -> None:
+        library_book_query = (
+            select(LibraryBooks)
+            .where(LibraryBooks.library_id == library_id, LibraryBooks.book_id == book_id)
+            .with_for_update()
+        )
+
+        session: AsyncSession = self._session_factory()
+        async with session, session.begin():
+            result = await session.execute(library_book_query)
+
+            try:
+                updated_library_book: LibraryBooks = result.scalar_one()
+            except NoResultFound:
+                raise NoFoundLibraryBook
+
+            if change_count < 0 and updated_library_book.available_count < 1:
+                raise PermissionError
+
+            updated_library_book.available_count += change_count
+
+            await session.flush()
+            await session.refresh(updated_library_book)
 
 
 library_repository: LibraryRepository = LibraryRepository(async_session)

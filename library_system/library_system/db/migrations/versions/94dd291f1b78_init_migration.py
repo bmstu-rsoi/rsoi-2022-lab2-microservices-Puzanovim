@@ -21,23 +21,21 @@ def upgrade() -> None:
     op.create_table(
         'books',
         sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
-        sa.Column('book_uid', postgresql.UUID(as_uuid=True), nullable=False),
+        sa.Column('book_uid', postgresql.UUID(as_uuid=True), unique=True, nullable=False),
         sa.Column('name', sa.String(length=255), nullable=False),
         sa.Column('author', sa.String(length=255), nullable=True),
         sa.Column('genre', sa.String(length=255), nullable=True),
         sa.Column('condition', sa.Enum('EXCELLENT', 'GOOD', 'BAD', name='condition'), nullable=True),
         sa.PrimaryKeyConstraint('id'),
-        sa.PrimaryKeyConstraint('book_uid'),
     )
     op.create_table(
         'library',
         sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
-        sa.Column('library_uid', postgresql.UUID(as_uuid=True), nullable=True),
+        sa.Column('library_uid', postgresql.UUID(as_uuid=True), unique=True, nullable=True),
         sa.Column('name', sa.String(length=80), nullable=False),
         sa.Column('city', sa.String(length=255), nullable=False),
         sa.Column('address', sa.String(length=255), nullable=False),
         sa.PrimaryKeyConstraint('id'),
-        sa.PrimaryKeyConstraint('library_uid'),
     )
     op.create_table(
         'library_books',
