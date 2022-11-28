@@ -20,12 +20,12 @@ class Reservation(BaseModel):
     tillDate: date
 
 
-class ReservationModel(BaseModel):
+class ReservationModel(Reservation):
     bookUid: UUID
     libraryUid: UUID
 
 
-class ReservationResponse(BaseModel):
+class ReservationResponse(Reservation):
     book: BookModel
     library: LibraryModel
 
@@ -41,11 +41,13 @@ class ReturnBookInput(BaseModel):
     date: date
 
 
-class ReservationBook(BaseModel):
-    reservationUid: UUID
-    status: Status
-    startDate: date
-    tillDate: date
-    book: BookModel
-    library: LibraryModel
+class ReservationBookResponse(ReservationResponse):
     rating: UserRating
+
+
+class ReservationUpdate(BaseModel):
+    status: Status
+
+
+class RentedBooks(BaseModel):
+    count: int

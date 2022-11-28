@@ -1,14 +1,17 @@
-from typing import List
+import json
+from typing import List, Dict
 from uuid import UUID
 
-from httpx import AsyncClient
-
 from gateway_service.apis.reservation_system.schemas import (
-    ReservationBook,
+    RentedBooks,
     ReservationBookInput,
-    ReturnBookInput, ReservationModel,
+    ReservationModel,
+    ReservationUpdate,
 )
 from gateway_service.config import RESERVATION_SYSTEM_CONFIG
+from httpx import AsyncClient
+
+from gateway_service.validators import json_dump
 
 
 class ReservationSystemAPI:
@@ -16,34 +19,67 @@ class ReservationSystemAPI:
         self._host = host
         self._port = port
 
-    async def get_reservations(self, name: str) -> List[ReservationModel]:
-        params = {'username': name}
+    async def get_reservations(self, username: str) -> List[ReservationModel]:
+        headers = {'X-User-Name': username}
         async with AsyncClient() as client:
-            response = await client.get(f'http://{self._host}:{self._port}/reservations', params=params)
+            response = await client.get(f'http://{self._host}:{self._port}/reservations', headers=headers)
 
-        reservations: List[ReservationModel] = response.json()
+        if response.status_code != 200:
+            print(response.json())
+
+        dict_reservations: List[Dict] = response.json()
+        reservations: List[ReservationModel] = [ReservationModel(**reservation) for reservation in dict_reservations]
         return reservations
 
-    async def reserve_book(self, name: str, reservation_book_input: ReservationBookInput) -> ReservationBook:
-        params = {'username': name}
+    async def get_reservation(self, username: str, reservation_uid: UUID) -> ReservationModel:
+        headers = {'X-User-Name': username}
         async with AsyncClient() as client:
-            response = await client.post(
-                f'http://{self._host}:{self._port}/reservations',
-                params=params,
-                data=reservation_book_input.dict()
+            response = await client.get(
+                f'http://{self._host}:{self._port}/reservations/{reservation_uid}', headers=headers
             )
 
-        reservation_book: ReservationBook = ReservationBook(**response.json())
+        if response.status_code != 200:
+            print(response.json())
+
+        reservation_book: ReservationModel = ReservationModel(**response.json())
         return reservation_book
 
-    async def return_book(self, name: str, reservation_id: UUID, return_book_input: ReturnBookInput) -> None:
-        params = {'username': name}
+    async def get_count_rented_books(self, username: str) -> RentedBooks:
+        headers = {'X-User-Name': username}
+        async with AsyncClient() as client:
+            response = await client.get(f'http://{self._host}:{self._port}/rented', headers=headers)
+
+        if response.status_code != 200:
+            print(response.json())
+
+        return RentedBooks(**response.json())
+
+    async def reserve_book(self, username: str, reservation_book_input: ReservationBookInput) -> ReservationModel:
+        headers = {'X-User-Name': username}
+        body: Dict = json_dump(reservation_book_input.dict())
         async with AsyncClient() as client:
             response = await client.post(
-                f'http://{self._host}:{self._port}/reservations/{reservation_id}/return',
-                params=params,
-                data=return_book_input.dict()
+                f'http://{self._host}:{self._port}/reservations', headers=headers, json=body
             )
+
+        if response.status_code != 200:
+            print(response.json())
+
+        reservation_book: ReservationModel = ReservationModel(**response.json())
+        return reservation_book
+
+    async def return_book(self, username: str, reservation_uid: UUID, reservation_update: ReservationUpdate) -> None:
+        headers = {'X-User-Name': username}
+        body = json_dump(reservation_update.dict())
+        async with AsyncClient() as client:
+            response = await client.post(
+                f'http://{self._host}:{self._port}/reservations/{reservation_uid}/return',
+                headers=headers,
+                json=body,
+            )
+
+        if response.status_code != 200:
+            print(response.json())
 
         if response.status_code == 204:
             return None

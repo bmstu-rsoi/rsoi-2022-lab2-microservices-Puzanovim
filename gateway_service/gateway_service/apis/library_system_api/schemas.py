@@ -23,10 +23,10 @@ class BookModel(BaseModel):
     name: str
     author: str
     genre: str
+    condition: Condition
 
 
 class BookInfo(BookModel):
-    condition: Condition
     availableCount: int
 
 
