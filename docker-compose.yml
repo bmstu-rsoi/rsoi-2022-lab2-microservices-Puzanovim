@@ -28,6 +28,7 @@ services:
   gateway_service:
     build: gateway_service
     container_name: gateway_service
+    restart: always
     ports:
       - "8080:8080"
     depends_on:
@@ -38,6 +39,7 @@ services:
   library_system:
     build: library_system
     container_name: library_system
+    restart: always
     ports:
       - "8060:8060"
     depends_on:
@@ -46,6 +48,7 @@ services:
   rating_system:
     build: rating_system
     container_name: rating_system
+    restart: always
     ports:
       - "8050:8050"
     depends_on:
@@ -54,6 +57,7 @@ services:
   reservation_system:
     build: reservation_system
     container_name: reservation_system
+    restart: always
     ports:
       - "8070:8070"
     depends_on:
