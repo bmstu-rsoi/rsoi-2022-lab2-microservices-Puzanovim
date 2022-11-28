@@ -1,14 +1,13 @@
 from typing import List
 from uuid import UUID
 
-from sqlalchemy.exc import NoResultFound
-from sqlalchemy.ext.asyncio import async_scoped_session, AsyncSession
-from sqlalchemy.future import select
-
 from reservation_system.db.db_config import async_session
-from reservation_system.db.models import Reservation
+from reservation_system.db.models import Reservation, Status
 from reservation_system.exceptions import NoFoundReservation
-from reservation_system.service.schemas import ReservationModel, ReservationInput, ReservationUpdate
+from reservation_system.service.schemas import RentedBooks, ReservationInput, ReservationModel, ReservationUpdate
+from sqlalchemy.exc import NoResultFound
+from sqlalchemy.ext.asyncio import AsyncSession, async_scoped_session
+from sqlalchemy.future import select
 
 
 class ReservationRepository:
@@ -47,11 +46,15 @@ class ReservationRepository:
 
         return ReservationModel.from_orm(new_reservation)
 
-    async def update_reservation(self, reservation_uid: UUID, reservation: ReservationUpdate) -> ReservationModel:
+    async def update_reservation(
+            self, reservation_uid: UUID, username: str, reservation: ReservationUpdate
+    ) -> ReservationModel:
         session: AsyncSession = self._session_factory()
         async with session, session.begin():
             result = await session.execute(
-                select(Reservation).where(Reservation.reservation_uid == reservation_uid).with_for_update()
+                select(Reservation)
+                .where(Reservation.reservation_uid == reservation_uid, Reservation.username == username)
+                .with_for_update()
             )
 
             try:
@@ -67,6 +70,17 @@ class ReservationRepository:
             await session.refresh(updated_reservation)
 
         return ReservationModel.from_orm(updated_reservation)
+
+    async def get_rented_books(self, username: str) -> RentedBooks:
+        session: AsyncSession = self._session_factory()
+        async with session, session.begin():
+            result = await session.execute(
+                select(Reservation).where(Reservation.username == username, Reservation.status == Status.RENTED)
+            )
+
+            reservations: List[Reservation] = result.scalars().all()
+
+        return RentedBooks(count=len(reservations))
 
 
 reservation_repository: ReservationRepository = ReservationRepository(async_session)

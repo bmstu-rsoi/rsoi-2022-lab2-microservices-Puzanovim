@@ -21,7 +21,7 @@ def upgrade() -> None:
     op.create_table(
         'reservation',
         sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
-        sa.Column('reservation_uid', postgresql.UUID(as_uuid=True), nullable=True),
+        sa.Column('reservation_uid', postgresql.UUID(as_uuid=True), unique=True, nullable=True),
         sa.Column('username', sa.String(length=80), nullable=False),
         sa.Column('book_uid', postgresql.UUID(as_uuid=True), nullable=False),
         sa.Column('library_uid', postgresql.UUID(as_uuid=True), nullable=False),
@@ -29,7 +29,6 @@ def upgrade() -> None:
         sa.Column('start_date', postgresql.TIMESTAMP(), nullable=False),
         sa.Column('till_date', postgresql.TIMESTAMP(), nullable=False),
         sa.PrimaryKeyConstraint('id'),
-        sa.PrimaryKeyConstraint('reservation_uid'),
     )
     # ### end Alembic commands ###
 
