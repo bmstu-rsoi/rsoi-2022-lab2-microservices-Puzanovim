@@ -17,7 +17,7 @@ if config.config_file_name is not None:
 # add your model's MetaData object here
 # for 'autogenerate' support
 # from myapp import mymodel
-from rating_system.models import Base
+from rating_system.db.models import Base
 
 # target_metadata = mymodel.Base.metadata
 target_metadata = Base.metadata

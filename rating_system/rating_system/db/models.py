@@ -1,4 +1,4 @@
-from rating_system.db import Base
+from rating_system.db.db_config import Base
 from sqlalchemy import Column, Integer, String
 
 

@@ -6,11 +6,13 @@ from alembic import command
 from alembic.config import Config
 from fastapi import FastAPI
 from rating_system.config import DB_CONFIG
-from rating_system.db import SQLALCHEMY_DATABASE_URL
+from rating_system.db.db_config import SQLALCHEMY_DATABASE_URL
+from rating_system.service.routers import router
 
 logger = logging.getLogger(__name__)
 
 app = FastAPI()
+app.include_router(router)
 
 
 def run_db_migrations(db_config: Dict[str, Any], migration_script_location: str):
@@ -39,5 +41,5 @@ def run_db_migrations(db_config: Dict[str, Any], migration_script_location: str)
 
 
 if __name__ == "__main__":
-    run_db_migrations(DB_CONFIG.dict(), 'rating_system/migrations/')
+    run_db_migrations(DB_CONFIG.dict(), 'rating_system/db/migrations/')
     uvicorn.run(app, host="0.0.0.0", port=8050)
